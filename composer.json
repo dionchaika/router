@@ -1,0 +1,27 @@
+{
+    "name": "dionchaika/router",
+    "description": "The PSR RESTful Router Library",
+    "keywords": ["php", "psr", "psr-7", "psr-17", "psr-15", "http", "http-message", "http-factory", "http-server-handler", "http-server-middleware"],
+    "homepage": "https://github.com/dionchaika/router",
+    "version": "v1.0.0",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dion Chaika",
+            "email": "dionchaika@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Dionchaika\\Router\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0",
+        "psr/http-message": "^1.0",
+        "psr/http-factory": "^1.0",
+        "psr/http-server-handler": "^1.0",
+        "psr/http-server-middleware": "^1.0"
+    }
+}
