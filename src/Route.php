@@ -11,8 +11,8 @@
 
 namespace Dionchaika\Router;
 
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Route
 {
@@ -151,10 +151,10 @@ class Route
     /**
      * Is the route matches a request.
      *
-     * @param \Psr\Http\Message\RequestInterface $request
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return bool
      */
-    public function isMatchesRequest(RequestInterface $request): bool
+    public function isMatchesRequest(ServerRequestInterface $request): bool
     {
         $pattern = $this->pattern;
         preg_match_all('/\[([^\[\]]*)\:([^\[\]]+)\]/', $pattern, $matches);
