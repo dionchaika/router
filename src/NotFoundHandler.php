@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class NotFoundRequestHandler implements RequestHandlerInterface
+class NotFoundHandler implements RequestHandlerInterface
 {
     /**
      * Handle a request and return a response.
