@@ -56,6 +56,6 @@ class Router
             }
         }
 
-        return new Route('GET|HEAD', '/.*', new NotFoundRequestHandler);
+        return new Route('GET|HEAD', '/.*', new NotFoundHandler);
     }
 }
