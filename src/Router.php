@@ -33,6 +33,13 @@ class Router
     protected $container;
 
     /**
+     * The request base path.
+     *
+     * @var string
+     */
+    protected $requestBasePath = '';
+
+    /**
      * @param \Dionchaika\Router\RouteCollection|null $routes
      * @param \Dionchaika\Container\Container|null    $container
      */
@@ -40,6 +47,27 @@ class Router
     {
         $this->routes = $routes ?? new RouteCollection;
         $this->container = $container ?? new Container;
+    }
+
+    /**
+     * Get the request base path.
+     *
+     * @return string
+     */
+    public function getRequestBasePath(): string
+    {
+        return $this->requestBasePath;
+    }
+
+    /**
+     * Set the request base path.
+     *
+     * @param string $path
+     * @return void
+     */
+    public function setRequestBasePath(string $path): void
+    {
+        $this->requestBasePath = '/'.trim($path, '/');
     }
 
     /**
@@ -159,6 +187,14 @@ class Router
      */
     public function match(ServerRequestInterface $request): ResponseInterface
     {
+        if ('' !== $this->requestBasePath) {
+            $request = $request->withUri(
+                $request->getUri()->withPath(
+                    str_replace($this->requestBasePath, '', $request->getUri()->getPath())
+                )
+            );
+        }
+
         foreach ($this->routes->all() as $route) {
             if ($route->isMatchesRequest($request)) {
                 foreach ($route->getParameters() as $parameter) {
