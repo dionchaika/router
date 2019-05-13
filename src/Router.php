@@ -225,6 +225,8 @@ class Router
      */
     public function getUriFor(string $name, array $parameters = []): string
     {
+        $this->routes->updateNamedRoutes();
+
         if ($this->routes->has($name)) {
             return $this->routes->get($name)->getUri($parameters);
         }

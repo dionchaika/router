@@ -100,4 +100,21 @@ class RouteCollection
     {
         return $this->has($name) ? $this->namedRoutes[$name] : null;
     }
+
+    /**
+     * Update the array of named routes.
+     *
+     * @return void
+     */
+    public function updateNamedRoutes(): void
+    {
+        foreach ($this->routes as $route) {
+            if (
+                null !== $route->getName() &&
+                '' !== $route->getName()
+            ) {
+                $this->namedRoutes[$route->getName()] = $route;
+            }
+        }
+    }
 }
