@@ -57,7 +57,11 @@ class RouteCollection
     public function add(Route $route): Route
     {
         $this->routes[] = $route;
-        return $this->namedRoutes[$route->getName()] = $route;
+        if ('' !== $route->getName()) {
+            $this->namedRoutes[$route->getName()] = $route;
+        }
+
+        return $route;
     }
 
     /**
@@ -101,7 +105,9 @@ class RouteCollection
     public function updateNamedRoutes(): void
     {
         foreach ($this->routes as $route) {
-            $this->namedRoutes[$route->getName()] = $route;
+            if ('' !== $route->getName()) {
+                $this->namedRoutes[$route->getName()] = $route;
+            }
         }
     }
 }
