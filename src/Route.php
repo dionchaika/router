@@ -11,6 +11,7 @@
 
 namespace Dionchaika\Router;
 
+use InvalidArgumentException;
 use Dionchaika\Http\Server\RequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -20,7 +21,7 @@ class Route
     /**
      * The route name.
      *
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -97,9 +98,9 @@ class Route
     /**
      * Get the route name.
      *
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -248,5 +249,41 @@ class Route
         }
 
         return false;
+    }
+
+    /**
+     * Get the URI for the route.
+     *
+     * @param mixed[] $parameters
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public function getUri(array $parameters = []): string
+    {
+        $uri = $this->pattern;
+
+        preg_match_all('/\[([^\[\]]*)\:([^\[\]]+)\]/', $uri, $matches);
+        foreach ($matches[0] as $key => $value) {
+            $parameterName = ('' !== $matches[1][$key])
+                ? $matches[1][$key]
+                : $matches[2][$key];
+
+            $parameterPattern = ('' !== $matches[1][$key])
+                ? '('.$matches[2][$key].')'
+                : '([^\/]+)';
+
+            if (
+                isset($parameters[$parameterName]) &&
+                preg_match('/^'.$parameterPattern.'$/', $parameters[$parameterName])
+            ) {
+                $uri = str_replace($value, $parameters[$parameterName], $uri);
+            } else {
+                throw new InvalidArgumentException(
+                    'Parameter is not passed: '.$parameterName.'!'
+                );
+            }
+        }
+
+        return $uri;
     }
 }

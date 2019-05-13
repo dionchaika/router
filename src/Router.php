@@ -11,6 +11,7 @@
 
 namespace Dionchaika\Router;
 
+use InvalidArgumentException;
 use Dionchaika\Http\Response;
 use Dionchaika\Container\Container;
 use Psr\Container\ContainerInterface;
@@ -212,5 +213,24 @@ class Router
         }
 
         return new Response(404);
+    }
+
+    /**
+     * Get the URI for the route.
+     *
+     * @param string  $name
+     * @param mixed[] $parameters
+     * @return string
+     * @throws \InvalidArgumentException
+     */
+    public function getUriFor(string $name, array $parameters = []): string
+    {
+        if ($this->routes->has($name)) {
+            return $this->routes->get($name)->getUri($parameters);
+        }
+
+        throw new InvalidArgumentException(
+            'Route does not exists: '.$name.'!'
+        );
     }
 }

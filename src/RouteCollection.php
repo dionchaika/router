@@ -23,6 +23,13 @@ class RouteCollection
     protected $routes = [];
 
     /**
+     * The array of named routes.
+     *
+     * @var mixed[]
+     */
+    protected $namedRoutes = [];
+
+    /**
      * @param \Dionchaika\Router\Route[] $routes
      * @throws \InvalidArgumentException
      */
@@ -49,7 +56,16 @@ class RouteCollection
      */
     public function add(Route $route): Route
     {
-        return $this->routes[] = $route;
+        $this->routes[] = $route;
+
+        if (
+            null !== $route->getName() &&
+            '' !== $route->getName()
+        ) {
+            $this->namedRoutes[$route->getName()] = $route;
+        }
+
+        return $route;
     }
 
     /**
@@ -60,5 +76,28 @@ class RouteCollection
     public function all(): array
     {
         return $this->routes;
+    }
+
+    /**
+     * Check is the named route
+     * exists in the collection.
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function has(string $name): bool
+    {
+        return isset($this->namedRoutes[$name]);
+    }
+
+    /**
+     * Get named route.
+     *
+     * @param string $name
+     * @return \Dionchaika\Router\Route|null
+     */
+    public function get(string $name): ?Route
+    {
+        return $this->has($name) ? $this->namedRoutes[$name] : null;
     }
 }
