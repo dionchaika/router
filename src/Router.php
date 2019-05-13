@@ -13,6 +13,7 @@ namespace Dionchaika\Router;
 
 use Dionchaika\Http\Response;
 use Dionchaika\Container\Container;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -28,7 +29,7 @@ class Router
     /**
      * The router container.
      *
-     * @var \Dionchaika\Container\Container
+     * @var \Psr\Container\ContainerInterface
      */
     protected $container;
 
@@ -41,9 +42,9 @@ class Router
 
     /**
      * @param \Dionchaika\Router\RouteCollection|null $routes
-     * @param \Dionchaika\Container\Container|null    $container
+     * @param \Psr\Container\ContainerInterface|null  $container
      */
-    public function __construct(?RouteCollection $routes = null, ?Container $container = null)
+    public function __construct(?RouteCollection $routes = null, ?ContainerInterface $container = null)
     {
         $this->routes = $routes ?? new RouteCollection;
         $this->container = $container ?? new Container;
