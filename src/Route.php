@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The PSR RESTful Router Library.
+ * The PSR RESTful Router.
  *
  * @package dionchaika/router
  * @version 1.0.0
@@ -11,11 +11,19 @@
 
 namespace Dionchaika\Router;
 
-use Psr\Http\Server\RequestHandlerInterface;
+use Dionchaika\Http\Server\RequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class Route
 {
+    /**
+     * The route name.
+     *
+     * @var string
+     */
+    protected $name;
+
     /**
      * The array
      * of route methods.
@@ -34,46 +42,88 @@ class Route
     /**
      * The route request handler.
      *
-     * @var \Psr\Http\Server\RequestHandlerInterface
+     * @var \Dionchaika\Http\Server\RequestHandler
      */
     protected $handler;
 
     /**
-     * Is the route
-     * successfuly matches a request.
+     * The route parameter collection.
      *
-     * @var bool
+     * @var \Dionchaika\Router\ParameterCollection
      */
-    protected $success = false;
+    protected $parameters;
 
     /**
-     * The array
-     * of route parameters.
+     * The array of headers
+     * that should be in the request.
      *
      * @var mixed[]
      */
-    protected $parameters = [];
+    protected $withHeaders = [];
 
     /**
-     * @param string[]|string                          $methods
-     * @param string                                   $pattern
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
+     * The array of headers
+     * that should not be in the request.
+     *
+     * @var string[]
      */
-    public function __construct($methods, string $pattern, RequestHandlerInterface $handler)
+    protected $withoutHeaders = [];
+
+    /**
+     * @param string|string[]                                          $methods
+     * @param string                                                   $pattern
+     * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $handler
+     */
+    public function __construct($methods, string $pattern, $handler)
     {
-        $this->methods = is_array($methods)
+        $methods = is_array($methods)
             ? $methods
             : explode('|', $methods);
 
-        $this->pattern = $pattern;
-        $this->handler = $handler;
-
         if (
-            in_array('GET', $this->methods) &&
-            !in_array('HEAD', $this->methods)
+            in_array('GET', $methods) &&
+            !in_array('HEAD', $methods)
         ) {
-            $this->methods[] = 'HEAD';
+            $methods[] = 'HEAD';
         }
+
+        $this->parameters = new ParameterCollection;
+
+        $this->methods = $methods;
+        $this->pattern = $pattern;
+        $this->handler = new RequestHandler($handler);
+    }
+
+    /**
+     * Get the route name.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set the route name.
+     *
+     * @param string $name
+     * @return self
+     */
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get the route pattern.
+     *
+     * @return string
+     */
+    public function getPattern(): string
+    {
+        return $this->pattern;
     }
 
     /**
@@ -88,16 +138,6 @@ class Route
     }
 
     /**
-     * Get the route pattern.
-     *
-     * @return string
-     */
-    public function getPattern(): string
-    {
-        return $this->pattern;
-    }
-
-    /**
      * Get the route request handler.
      *
      * @return \Psr\Http\Server\RequestHandlerInterface
@@ -108,48 +148,56 @@ class Route
     }
 
     /**
-     * Is the route
-     * successfuly matches a request.
+     * Add a new middleware to the route.
      *
-     * @return bool
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
+     * @return self
      */
-    public function isSuccess(): bool
+    public function addMiddleware($middleware): self
     {
-        return $this->success;
+        $this->handler->add($middleware);
+        return $this;
     }
 
     /**
-     * Is the route has a parameter.
+     * Get the route parameter collection.
      *
-     * @param string $name
-     * @return bool
+     * @return \Dionchaika\Router\ParameterCollection
      */
-    public function hasParameter(string $name): bool
-    {
-        return isset($this->parameters[$name]);
-    }
-
-    /**
-     * Get the route parameter.
-     *
-     * @param string $name
-     * @return mixed
-     */
-    public function getParameter(string $name)
-    {
-        return $this->hasParameter($name) ? $this->parameters[$name] : null;
-    }
-
-    /**
-     * @return mixed[]
-     */
-    public function getParameters(): array
+    public function getParameters(): ParameterCollection
     {
         return $this->parameters;
     }
 
     /**
-     * Is the route matches a request.
+     * Add a header
+     * whitch should be in the request.
+     *
+     * @param string $name
+     * @param string $pattern
+     * @return self
+     */
+    public function withHeader(string $name, string $pattern = '.*'): self
+    {
+        $this->withHeaders[$name] = $pattern;
+        return $this;
+    }
+
+    /**
+     * Add a header
+     * whitch should not be in the request.
+     *
+     * @param string $header
+     * @return self
+     */
+    public function withoutHeader(string $header): self
+    {
+        $this->withoutHeaders[] = $header;
+        return $this;
+    }
+
+    /**
+     * Check is the route matches request.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return bool
@@ -157,8 +205,8 @@ class Route
     public function isMatchesRequest(ServerRequestInterface $request): bool
     {
         $pattern = $this->pattern;
-        preg_match_all('/\[([^\[\]]*)\:([^\[\]]+)\]/', $pattern, $matches);
 
+        preg_match_all('/\[([^\[\]]*)\:([^\[\]]+)\]/', $pattern, $matches);
         foreach ($matches[0] as $key => $value) {
             $parameterName = ('' !== $matches[1][$key])
                 ? $matches[1][$key]
@@ -168,7 +216,7 @@ class Route
                 ? '('.$matches[2][$key].')'
                 : '([^\/]+)';
 
-            $this->parameters[$parameterName] = null;
+            $this->parameters->add(new Parameter($parameterName, null));
             $pattern = str_replace($value, $parameterPattern, $pattern);
         }
 
@@ -176,10 +224,27 @@ class Route
             in_array($request->getMethod(), $this->methods) &&
             preg_match('~^'.$pattern.'$~', $request->getUri()->getPath(), $matches)
         ) {
-            array_shift($matches);
-            $this->parameters = array_combine(array_keys($this->parameters), array_values($matches));
+            foreach ($this->withHeaders as $name => $value) {
+                if (
+                    !$request->hasHeader($name) ||
+                    !preg_match('/^'.preg_quote($value).'$/', $request->getHeaderLine($name))
+                ) {
+                    return false;
+                }
+            }
 
-            return $this->success = true;
+            foreach ($this->withoutHeaders as $header) {
+                if ($request->hasHeader($header)) {
+                    return false;
+                }
+            }
+
+            array_shift($matches);
+            foreach ($this->parameters->all() as $parameter) {
+                $parameter->setValue(array_shift($matches));
+            }
+
+            return true;
         }
 
         return false;
