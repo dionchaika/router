@@ -21,7 +21,7 @@ class Route
     /**
      * The route name.
      *
-     * @var string|null
+     * @var string
      */
     protected $name;
 
@@ -90,6 +90,7 @@ class Route
 
         $this->parameters = new ParameterCollection;
 
+        $this->name = '';
         $this->methods = $methods;
         $this->pattern = $pattern;
         $this->handler = new RequestHandler($handler);
@@ -98,9 +99,9 @@ class Route
     /**
      * Get the route name.
      *
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }

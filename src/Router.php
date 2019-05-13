@@ -11,6 +11,7 @@
 
 namespace Dionchaika\Router;
 
+use Closure;
 use InvalidArgumentException;
 use Dionchaika\Http\Response;
 use Dionchaika\Container\Container;
@@ -40,6 +41,14 @@ class Router
      * @var string
      */
     protected $requestBasePath = '';
+
+    /**
+     * The array
+     * of route group attributes.
+     *
+     * @var mixed[]
+     */
+    protected $routeGroup = [];
 
     /**
      * @param \Dionchaika\Router\RouteCollection|null $routes
@@ -82,7 +91,27 @@ class Router
      */
     public function addRoute($methods, string $pattern, $handler): Route
     {
-        return $this->routes->add(new Route($methods, $pattern, $handler));
+        $route = new Route($methods, $pattern, $handler);
+
+        if (!empty($this->routeGroup)) {
+            $attributes = $this->routeGroup[count($this->routeGroup) - 1];
+
+            if (isset($attributes['name'])) {
+                $route->setName(
+                    ltrim($route->getName().'.'.$attributes['name'], '.')
+                );
+            }
+
+            if (isset($attributes['middleware'])) {
+                $middleware = is_array($attributes['middleware'])
+                    ? $attributes['middleware']
+                    : [$attributes['middleware']];
+
+                $route->addMiddleware($middleware);
+            }
+        }
+
+        return $this->routes->add($route);
     }
 
     /**
@@ -179,6 +208,20 @@ class Router
     public function any(string $pattern, $handler): Route
     {
         return $this->addRoute('GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS', $pattern, $handler);
+    }
+
+    /**
+     * Add a new route group.
+     *
+     * @param mixed[]  $attributes
+     * @param \Closure $callback
+     * @return void
+     */
+    public function group(array $attributes = [], Closure $callback): void
+    {
+        $this->routeGroup[] = $attributes;
+        $callback($this);
+        array_pop($this->routeGroup);
     }
 
     /**
