@@ -33,13 +33,13 @@ class Router
     protected $container;
 
     /**
-     * @param \Dionchaika\Container\Container         $container
      * @param \Dionchaika\Router\RouteCollection|null $routes
+     * @param \Dionchaika\Container\Container|null    $container
      */
-    public function __construct(Container $container, ?RouteCollection $routes = null)
+    public function __construct(?RouteCollection $routes = null, ?Container $container = null)
     {
-        $this->container = $container;
         $this->routes = $routes ?? new RouteCollection;
+        $this->container = $container ?? new Container;
     }
 
     /**
