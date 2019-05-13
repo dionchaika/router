@@ -198,6 +198,8 @@ class Router
 
         foreach ($this->routes->all() as $route) {
             if ($route->isMatchesRequest($request)) {
+                $request = $request->withAttribute('route', $route);
+
                 foreach ($route->getParameters()->all() as $parameter) {
                     $request = $request->withAttribute(
                         $parameter->getName(),
