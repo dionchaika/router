@@ -14,7 +14,7 @@ namespace Dionchaika\Router;
 use Dionchaika\Http\Uri;
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
-use Dionchaika\Http\Server\RequestHandler;
+use Dionchaika\Router\RequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -45,7 +45,7 @@ class Route
     /**
      * The route request handler.
      *
-     * @var \Dionchaika\Http\Server\RequestHandler
+     * @var \Dionchaika\Router\RequestHandler
      */
     protected $handler;
 
