@@ -54,19 +54,20 @@ class RequestHandler extends Handler implements RequestHandlerInterface
 
             if ($fallbackHandler instanceof Closure) {
                 return $fallbackHandler($request);
-            } else if (is_string($fallbackHandler)) {
-                $fallbackHandler = $this->container->make($fallbackHandler);
-                if (method_exists($fallbackHandler, ['handle'])) {
-                    return $fallbackHandler->handle($request);
-                }
-            } else if ($fallbackHandler instanceof RequestHandlerInterface) {
+            }
+
+            $fallbackHandler = !is_string($fallbackHandler)
+                ? $fallbackHandler
+                : $this->container->make($fallbackHandler);
+
+            if ($fallbackHandler instanceof RequestHandlerInterface) {
                 return $fallbackHandler->handle($request);
             }
 
             throw new RuntimeException(
                 'Invalid fallback handler! '
                 .'Fallback handler must be an instance of \\Closure '
-                .'or an instance of \\Psr\\Http\\Server\\RequestHandlerInterface'
+                .'or an instance of \\Psr\\Http\\Server\\RequestHandlerInterface.'
             );
         }
 
@@ -74,19 +75,20 @@ class RequestHandler extends Handler implements RequestHandlerInterface
 
         if ($middleware instanceof Closure) {
             return $middleware($request, $this);
-        } else if (is_string($middleware)) {
-            $middleware = $this->container->make($middleware);
-            if (method_exists($middleware, 'process')) {
-                return $middleware->process($request, $this);
-            }
-        } else if ($middleware instanceof MiddlewareInterface) {
+        }
+
+        $middleware = !is_string($middleware)
+            ? $middleware
+            : $this->container->make($middleware);
+
+        if ($middleware instanceof MiddlewareInterface) {
             return $middleware->process($request, $this);
         }
 
         throw new RuntimeException(
             'Invalid middleware! '
             .'Middleware must be an instance of \\Closure '
-            .'or an instance of \\Psr\\Http\\Server\\MiddlewareInterface'
+            .'or an instance of \\Psr\\Http\\Server\\MiddlewareInterface.'
         );
     }
 }
