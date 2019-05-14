@@ -45,6 +45,7 @@ class RequestHandler extends Handler implements RequestHandlerInterface
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface
      * @throws \RuntimeException
+     * @throws \Psr\Container\ContainerExceptionInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
