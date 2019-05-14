@@ -24,7 +24,7 @@ use Psr\Http\Message\ServerRequestInterface;
 class RequestHandler extends Handler implements RequestHandlerInterface
 {
     /**
-     * The request handler container instance.
+     * The request handler container.
      *
      * @var \Dionchaika\Container\Container
      */
