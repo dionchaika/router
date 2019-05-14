@@ -11,7 +11,9 @@
 
 namespace Dionchaika\Router;
 
+use Dionchaika\Http\Uri;
 use InvalidArgumentException;
+use Psr\Http\Message\UriInterface;
 use Dionchaika\Http\Server\RequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -256,10 +258,10 @@ class Route
      * Get the URI for the route.
      *
      * @param mixed[] $parameters
-     * @return string
+     * @return \Psr\Http\Message\UriInterface
      * @throws \InvalidArgumentException
      */
-    public function getUri(array $parameters = []): string
+    public function getUri(array $parameters = []): UriInterface
     {
         $uri = $this->pattern;
 
@@ -285,6 +287,6 @@ class Route
             }
         }
 
-        return $uri;
+        return new Uri($uri);
     }
 }

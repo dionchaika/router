@@ -14,6 +14,7 @@ namespace Dionchaika\Router;
 use Closure;
 use InvalidArgumentException;
 use Dionchaika\Http\Response;
+use Psr\Http\Message\UriInterface;
 use Dionchaika\Container\Container;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -243,10 +244,10 @@ class Router
      *
      * @param string  $name
      * @param mixed[] $parameters
-     * @return string
+     * @return \Psr\Http\Message\UriInterface
      * @throws \InvalidArgumentException
      */
-    public function getUriFor(string $name, array $parameters = []): string
+    public function getUriFor(string $name, array $parameters = []): UriInterface
     {
         $this->routes->updateNamedRoutes();
 
