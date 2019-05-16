@@ -14,7 +14,6 @@ namespace Dionchaika\Router;
 use Dionchaika\Http\Uri;
 use InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
-use Dionchaika\Router\RequestHandler;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 

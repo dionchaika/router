@@ -52,6 +52,13 @@ class Router
     protected $routeGroup = [];
 
     /**
+     * The array of router middleware.
+     *
+     * @var mixed[]
+     */
+    protected $middleware = [];
+
+    /**
      * @param \Dionchaika\Router\RouteCollection|null $routes
      * @param \Psr\Container\ContainerInterface|null  $container
      */
@@ -95,6 +102,18 @@ class Router
     public function addRoute($methods, string $pattern, $handler): Route
     {
         return $this->routes->add(new Route($methods, $pattern, $handler));
+    }
+
+    /**
+     * Add a new router middleware.
+     *
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
+     * @return self
+     */
+    public function addMiddleware($middleware): self
+    {
+        $this->middleware[] = $middleware;
+        return $this;
     }
 
     /**
@@ -234,7 +253,11 @@ class Router
                     );
                 }
 
-                return $route->getHandler()->handle($request);
+                $handler = new RequestHandler(function (ServerRequestInterface $request) use ($route) {
+                    return $route->getHandler()->handle($request);
+                }, $this->middleware);
+
+                return $handler->handle($request);
             }
         }
 
