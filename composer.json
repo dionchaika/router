@@ -17,6 +17,8 @@
             "Dionchaika\\Router\\": "src/"
         }
     },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
     "require": {
         "php": "^7.0",
         "dionchaika/http": "dev-master",
