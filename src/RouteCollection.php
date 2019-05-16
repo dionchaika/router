@@ -36,7 +36,7 @@ class RouteCollection
     public function __construct(array $routes = [])
     {
         foreach ($routes as $route) {
-            if (!($routes instanceof Route)) {
+            if (!($route instanceof Route)) {
                 throw new InvalidArgumentException(
                     'Route must be an instance of '
                     .'\\Dionchaika\\Router\\Route!'
