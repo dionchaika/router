@@ -55,8 +55,10 @@ class Router
      * @param \Dionchaika\Router\RouteCollection|null $routes
      * @param \Psr\Container\ContainerInterface|null  $container
      */
-    public function __construct(?RouteCollection $routes = null, ?ContainerInterface $container = null)
-    {
+    public function __construct(
+        ?RouteCollection $routes       = null,
+        ?ContainerInterface $container = null
+    ) {
         $this->routes = $routes ?? new RouteCollection;
         $this->container = $container ?? new Container;
     }
