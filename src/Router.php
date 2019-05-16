@@ -253,7 +253,7 @@ class Router
                     );
                 }
 
-                $handler = new RequestHandler(function (ServerRequestInterface $request) use ($route) {
+                $handler = new RequestHandler(function ($request) use ($route) {
                     return $route->getHandler()->handle($request);
                 }, $this->middleware);
 
