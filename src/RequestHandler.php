@@ -24,11 +24,12 @@ use Psr\Http\Message\ServerRequestInterface;
 class RequestHandler extends Handler implements RequestHandlerInterface
 {
     /**
-     * The request handler container.
+     * The router instance
+     * used by the request handler.
      *
-     * @var \Dionchaika\Container\Container
+     * @var \Dionchaika\Router\Router
      */
-    protected $container;
+    protected $router;
 
     /**
      * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $fallbackHandler
@@ -37,6 +38,30 @@ class RequestHandler extends Handler implements RequestHandlerInterface
     public function __construct($fallbackHandler, array $middleware = []) {
         $this->container = new Container;
         parent::__construct($fallbackHandler, $middleware);
+    }
+
+    /**
+     * Get the router instance
+     * used by the request handler.
+     *
+     * @return \Dionchaika\Router\Router
+     */
+    public function getRouter(): Router
+    {
+        return $this->router;
+    }
+
+    /**
+     * Set the router instance
+     * used by the request handler.
+     *
+     * @param \Dionchaika\Router\Router $router
+     * @return self
+     */
+    public function setRouter(Router $router): self
+    {
+        $this->router = $router;
+        return $this;
     }
 
     /**
@@ -49,6 +74,8 @@ class RequestHandler extends Handler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $container = $this->router->getContainer();
+
         if (0 === count($this->middleware)) {
             $fallbackHandler = $this->fallbackHandler;
 

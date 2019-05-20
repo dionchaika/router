@@ -49,6 +49,13 @@ class Route
     protected $handler;
 
     /**
+     * The router instance used by the route.
+     *
+     * @var \Dionchaika\Router\Router
+     */
+    protected $router;
+
+    /**
      * The route parameter collection.
      *
      * @var \Dionchaika\Router\ParameterCollection
@@ -94,6 +101,28 @@ class Route
         $this->pattern = $pattern;
         $this->handler = new RequestHandler($handler);
         $this->parameters = new ParameterCollection;
+    }
+
+    /**
+     * Get the router instance used by the route.
+     *
+     * @return \Dionchaika\Router\Router
+     */
+    public function getRouter(): Router
+    {
+        return $this->router;
+    }
+
+    /**
+     * Set the router instance used by the route.
+     *
+     * @param \Dionchaika\Router\Router $router
+     * @return self
+     */
+    public function setRouter(Router $router): self
+    {
+        $this->router = $router;
+        return $this;
     }
 
     /**

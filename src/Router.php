@@ -13,7 +13,6 @@ namespace Dionchaika\Router;
 
 use Closure;
 use InvalidArgumentException;
-use Dionchaika\Http\Response;
 use Psr\Http\Message\UriInterface;
 use Dionchaika\Container\Container;
 use Psr\Container\ContainerInterface;
@@ -28,6 +27,14 @@ class Router
     const METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
     /**
+     * Store matched URI
+     * parameters as request attributes.
+     *
+     * @var bool
+     */
+    public $parametersAsRequestAttributes = true;
+
+    /**
      * The route collection.
      *
      * @var \Dionchaika\Router\RouteCollection
@@ -35,7 +42,8 @@ class Router
     protected $routes;
 
     /**
-     * The router container.
+     * The container
+     * instance used by the router.
      *
      * @var \Psr\Container\ContainerInterface
      */
@@ -77,29 +85,7 @@ class Router
     }
 
     /**
-     * Get the route collection.
-     *
-     * @return \Dionchaika\Router\RouteCollection
-     */
-    public function getRoutes(): RouteCollection
-    {
-        return $this->routes;
-    }
-
-    /**
-     * Set the route collection.
-     *
-     * @param \Dionchaika\Router\RouteCollection $routes
-     * @return self
-     */
-    public function setRoutes(RouteCollection $routes): self
-    {
-        $this->routes = $routes;
-        return $this;
-    }
-
-    /**
-     * Get the router container.
+     * Get the container instance used by the router.
      *
      * @return \Psr\Container\ContainerInterface
      */
@@ -109,7 +95,7 @@ class Router
     }
 
     /**
-     * Set the router container.
+     * Set the container instance used by the router.
      *
      * @param \Psr\Container\ContainerInterface $container
      * @return self
@@ -328,15 +314,10 @@ class Router
                 }
 
                 $handler = new RequestHandler(function ($request) use ($route) {
-                    return $route
-                        ->getHandler()
-                        ->setContainer($this->container)
-                        ->handle($request);
+                    return $route->getHandler()->handle($request);
                 }, $this->middleware);
 
-                return $handler
-                    ->setContainer($this->container)
-                    ->handle($request);
+                return $handler->handle($request);
             }
         }
 
