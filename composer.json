@@ -1,7 +1,20 @@
 {
     "name": "dionchaika/router",
     "description": "The PSR RESTful Router Library",
-    "keywords": ["php", "psr", "psr-7", "psr-17", "psr-15", "http", "http-message", "http-factory", "http-server-handler", "http-server-middleware", "rest", "router"],
+    "keywords": [
+        "php",
+        "psr",
+        "psr-7",
+        "psr-17",
+        "psr-15",
+        "http",
+        "http-message",
+        "http-factory",
+        "http-server-handler",
+        "http-server-middleware",
+        "rest",
+        "router"
+    ],
     "homepage": "https://github.com/dionchaika/router",
     "version": "v1.0.0",
     "type": "library",
