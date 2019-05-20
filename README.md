@@ -39,6 +39,8 @@ For pretty URLs create an .htaccess file
 
 ## Configuration
 ```php
+<?php
+
 use Dionchaika\Router\Route;
 use Dionchaika\Router\Router;
 use Dionchaika\Router\RouteCollection;
@@ -57,13 +59,13 @@ $router = new Router($routes);
 ## Basic usage
 1. Registering routes:
 ```php
+<?php
 
 $router->get('{pattern}', '{handler}');
+$router->put('{pattern}', '{handler}');
 $router->head('{pattern}', '{handler}');
 $router->post('{pattern}', '{handler}');
-$router->put('{pattern}', '{handler}');
 $router->patch('{pattern}', '{handler}');
 $router->delete('{pattern}', '{handler}');
 $router->options('{pattern}', '{handler}');
-
 ```
