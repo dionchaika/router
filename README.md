@@ -14,7 +14,7 @@ require_once 'vendor/autoload.php';
 
 For pretty URLs create an .htaccess file
 (for Apache) in your server public directory:
-```.htaccess
+```apacheconf
 <IfModule mod_rewrite.c>
 
     <IfModule mod_negotiation.c>
