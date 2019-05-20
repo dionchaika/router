@@ -263,7 +263,7 @@ class Router
      */
     public function group(array $attributes = [], Closure $callback): void
     {
-        $this->updateRouteGroup($attributes);
+        $this->routeGroup[] = $attributes;
         $callback($this);
         array_pop($this->routeGroup);
     }
@@ -330,37 +330,5 @@ class Router
         throw new InvalidArgumentException(
             'Route does not exists: '.$name.'!'
         );
-    }
-
-    /**
-     * Update the route group attributes.
-     *
-     * @param mixed[] $attributes
-     * @return void
-     */
-    protected function updateRouteGroup(array $attributes): void
-    {
-        if (empty($this->routeGroup)) {
-            $this->routeGroup[] = $attributes;
-        } else {
-            if (
-                isset($attributes['name']) &&
-                isset($this->routeGroup['name'])
-            ) {
-                $this->routeGroup['name'] .= '.'.$attributes['name'];
-            }
-
-            if (
-                isset($attributes['middleware']) &&
-                isset($this->routeGroup['middleware'])
-            ) {
-                $this->routeGroup['middleware'] .= array_merge(
-                    $this->routeGroup['middleware'],
-                    is_array($attributes['middleware'])
-                        ? $attributes['middleware']
-                        : [$attributes['middleware']]
-                );
-            }
-        }
     }
 }
