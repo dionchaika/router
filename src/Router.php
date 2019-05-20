@@ -251,7 +251,35 @@ class Router
      */
     public function addRoute($methods, string $pattern, $handler): Route
     {
-        return $this->routes->add(new Route($methods, $pattern, $handler));
+        $route = new Route($methods, $pattern, $handler);
+
+        if (!empty($this->routeGroup)) {
+            $name = '';
+            $middleware = [];
+
+            foreach ($this->routeGroup as $routeGroup) {
+                if (isset($routeGroup['name'])) {
+                    $name .= '.'.$routeGroup['name'];
+                }
+
+                if (isset($routeGroup['middleware'])) {
+                    $mw = is_array($routeGroup['middleware'])
+                        ? $routeGroup['middleware']
+                        : [$routeGroup['middleware']];
+
+                    $middleware = array_merge($middleware, $mw);
+                }
+            }
+
+            $name = ltrim($name, '.');
+
+            $route->setName($name);
+            foreach ($middleware as $mw) {
+                $route->use($mw);
+            }
+        }
+
+        return $this->routes->add($route);
     }
 
     /**
