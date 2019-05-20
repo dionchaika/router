@@ -49,13 +49,6 @@ class Route
     protected $handler;
 
     /**
-     * The router instance used by the route.
-     *
-     * @var \Dionchaika\Router\Router
-     */
-    protected $router;
-
-    /**
      * The route parameter collection.
      *
      * @var \Dionchaika\Router\ParameterCollection
@@ -96,35 +89,11 @@ class Route
             $methods[] = 'HEAD';
         }
 
-        $this->name = '';
-        $this->methods = $methods;
-        $this->pattern = $pattern;
-        $this->handler = new RequestHandler($handler);
-
-        $this->router = new Router;
+        $this->name       = '';
+        $this->methods    = $methods;
+        $this->pattern    = $pattern;
         $this->parameters = new ParameterCollection;
-    }
-
-    /**
-     * Get the router instance used by the route.
-     *
-     * @return \Dionchaika\Router\Router
-     */
-    public function getRouter(): Router
-    {
-        return $this->router;
-    }
-
-    /**
-     * Set the router instance used by the route.
-     *
-     * @param \Dionchaika\Router\Router $router
-     * @return self
-     */
-    public function setRouter(Router $router): self
-    {
-        $this->router = $router;
-        return $this;
+        $this->handler    = new RequestHandler($handler);
     }
 
     /**
@@ -173,9 +142,9 @@ class Route
     /**
      * Get the route request handler.
      *
-     * @return \Psr\Http\Server\RequestHandlerInterface
+     * @return \Dionchaika\Router\RequestHandler
      */
-    public function getHandler(): RequestHandlerInterface
+    public function getHandler(): RequestHandler
     {
         return $this->handler;
     }
@@ -186,23 +155,10 @@ class Route
      * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
      * @return self
      */
-    public function addMiddleware($middleware): self
+    public function use($middleware): self
     {
         $this->handler->add($middleware);
         return $this;
-    }
-
-    /**
-     * Add a new middleware to the route.
-     *
-     * An alias method name to addMiddleware.
-     *
-     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
-     * @return self
-     */
-    public function use($middleware): self
-    {
-        return $this->addMiddleware($middleware);
     }
 
     /**
