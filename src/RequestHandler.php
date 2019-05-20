@@ -91,4 +91,15 @@ class RequestHandler extends Handler implements RequestHandlerInterface
             .'or an instance of \\Psr\\Http\\Server\\MiddlewareInterface.'
         );
     }
+
+    /**
+     * Invoke the request handler.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function __invoke(ServerRequestInterface $request): ResponseInterface
+    {
+        return $this->handle($request);
+    }
 }

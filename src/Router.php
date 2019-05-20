@@ -37,11 +37,11 @@ class Router
     protected $container;
 
     /**
-     * The request base path.
+     * The array of router middleware.
      *
-     * @var string
+     * @var mixed[]
      */
-    protected $requestBasePath = '';
+    protected $middleware = [];
 
     /**
      * The array
@@ -52,11 +52,11 @@ class Router
     protected $routeGroup = [];
 
     /**
-     * The array of router middleware.
+     * The request base path.
      *
-     * @var mixed[]
+     * @var string
      */
-    protected $middleware = [];
+    protected $requestBasePath = '';
 
     /**
      * @param \Dionchaika\Router\RouteCollection|null $routes
@@ -68,6 +68,50 @@ class Router
     ) {
         $this->routes = $routes ?? new RouteCollection;
         $this->container = $container ?? new Container;
+    }
+
+    /**
+     * Get the route collection.
+     *
+     * @return \Dionchaika\Router\RouteCollection
+     */
+    public function getRoutes(): RouteCollection
+    {
+        return $this->routes;
+    }
+
+    /**
+     * Set the route collection.
+     *
+     * @param \Dionchaika\Router\RouteCollection $routes
+     * @return self
+     */
+    public function setRoutes(RouteCollection $routes): self
+    {
+        $this->routes = $routes;
+        return $this;
+    }
+
+    /**
+     * Get the router container.
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+    /**
+     * Set the router container.
+     *
+     * @param \Psr\Container\ContainerInterface $container
+     * @return self
+     */
+    public function setContainer(ContainerInterface $container): self
+    {
+        $this->container = $container;
+        return $this;
     }
 
     /**
