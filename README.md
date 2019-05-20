@@ -36,3 +36,20 @@ For pretty URLs create an .htaccess file
 
 </IfModule>
 ```
+
+## Configuration
+```php
+use Dionchaika\Router\Route;
+use Dionchaika\Router\Router;
+use Dionchaika\Router\RouteCollection;
+
+$routes = new RouteCollection([
+
+    new Route('GET', '/', '\\App\\Controllers\\Home'),
+    new Route('GET', '/about', '\\App\\Controllers\\About'),
+    new Route('GET', '/contact', '\\App\\Controllers\\Contact')
+
+]);
+
+$router = new Router($routes);
+```
