@@ -37,7 +37,8 @@ class Router
     protected $container;
 
     /**
-     * The array of router middleware.
+     * The array
+     * of router middleware.
      *
      * @var mixed[]
      */
