@@ -23,6 +23,11 @@ use Psr\Http\Message\ServerRequestInterface;
 class Router
 {
     /**
+     * The allowed request methods.
+     */
+    const METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+
+    /**
      * The route collection.
      *
      * @var \Dionchaika\Router\RouteCollection
@@ -162,6 +167,19 @@ class Router
     }
 
     /**
+     * Add a new router middleware.
+     *
+     * An alias method name to addMiddleware.
+     *
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
+     * @return self
+     */
+    public function use($middleware): self
+    {
+        return $this->addMiddleware($middleware);
+    }
+
+    /**
      * Add a new GET method route.
      *
      * @param string                                                   $pattern
@@ -254,7 +272,18 @@ class Router
      */
     public function any(string $pattern, $handler): Route
     {
-        return $this->addRoute('GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS', $pattern, $handler);
+        return $this->addRoute(self::METHODS, $pattern, $handler);
+    }
+
+    /**
+     * Add a new fallback route.
+     *
+     * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $handler
+     * @return \Dionchaika\Router\Route
+     */
+    public function fallback($handler): Route
+    {
+        return $this->any('.*', $handler);
     }
 
     /**
@@ -299,14 +328,19 @@ class Router
                 }
 
                 $handler = new RequestHandler(function ($request) use ($route) {
-                    return $route->getHandler()->handle($request);
+                    return $route
+                        ->getHandler()
+                        ->setContainer($this->container)
+                        ->handle($request);
                 }, $this->middleware);
 
-                return $handler->handle($request);
+                return $handler
+                    ->setContainer($this->container)
+                    ->handle($request);
             }
         }
 
-        return new Response(404);
+        throw new NotFoundException;
     }
 
     /**

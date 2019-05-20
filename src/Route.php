@@ -89,12 +89,11 @@ class Route
             $methods[] = 'HEAD';
         }
 
-        $this->parameters = new ParameterCollection;
-
         $this->name = '';
         $this->methods = $methods;
         $this->pattern = $pattern;
         $this->handler = new RequestHandler($handler);
+        $this->parameters = new ParameterCollection;
     }
 
     /**
@@ -160,6 +159,19 @@ class Route
     {
         $this->handler->add($middleware);
         return $this;
+    }
+
+    /**
+     * Add a new middleware to the route.
+     *
+     * An alias method name to addMiddleware.
+     *
+     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
+     * @return self
+     */
+    public function use($middleware): self
+    {
+        return $this->addMiddleware($middleware);
     }
 
     /**
