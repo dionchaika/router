@@ -71,4 +71,16 @@ $router->get('/', function ($request) {
     return (new ResponseFactory)
         ->createPlainTextResponse('Welcome!');
 });
+
+//
+// Allowed request methods:
+//
+// $router->get( pattern, handler );
+// $router->put( pattern, handler );
+// $router->head( pattern, handler );
+// $router->post( pattern, handler );
+// $router->patch( pattern, handler );
+// $router->delete( pattern, handler );
+// $router->options( pattern, handler );
+//
 ```
