@@ -43,6 +43,8 @@ For pretty URLs create an .htaccess file
 
 use Dionchaika\Router\Route;
 use Dionchaika\Router\Router;
+use Dionchaika\Http\ServerRequest;
+use Dionchaika\Http\Utils\Emitter;
 use Dionchaika\Router\RouteCollection;
 
 $routes = new RouteCollection([
@@ -55,7 +57,7 @@ $routes = new RouteCollection([
 
 $router = new Router($routes);
 
-$response = $router->matchRequest($request);
+Emitter::emit($router->match(ServerRequest::createFromGlobals()));
 ```
 
 ## Basic usage
@@ -63,11 +65,10 @@ $response = $router->matchRequest($request);
 ```php
 <?php
 
-$router->get('/account/login', '\\App\\Controllers\\Account\\Login');
-$router->put('/account/login', '\\App\\Controllers\\Account\\Login');
-$router->head('/account/login', '\\App\\Controllers\\Account\\Login');
-$router->post('/account/login', '\\App\\Controllers\\Account\\Login');
-$router->patch('/account/login', '\\App\\Controllers\\Account\\Login');
-$router->delete('/account/login', '\\App\\Controllers\\Account\\Login');
-$router->options('/account/login', '\\App\\Controllers\\Account\\Login');
+use Dionchaika\Http\Factory\ResponseFactory;
+
+$router->get('/', function ($request) {
+    return (new ResponseFactory)
+        ->createPlainTextResponse('Welcome!');
+});
 ```
