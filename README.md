@@ -53,3 +53,17 @@ $routes = new RouteCollection([
 
 $router = new Router($routes);
 ```
+
+## Basic usage
+1. Registering routes:
+```php
+
+$router->get('{pattern}', '{handler}');
+$router->head('{pattern}', '{handler}');
+$router->post('{pattern}', '{handler}');
+$router->put('{pattern}', '{handler}');
+$router->patch('{pattern}', '{handler}');
+$router->delete('{pattern}', '{handler}');
+$router->options('{pattern}', '{handler}');
+
+```
