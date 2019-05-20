@@ -294,10 +294,15 @@ class Router
                 }
 
                 $handler = new RequestHandler(function ($request) use ($route) {
-                    return $route->getHandler()->handle($request);
+                    return $route
+                        ->getHandler()
+                        ->setContainer($this->container)
+                        ->handle($request);
                 }, $this->middleware);
 
-                return $handler->handle($request);
+                return $handler
+                    ->setContainer($this->container)
+                    ->handle($request);
             }
         }
 

@@ -16,6 +16,7 @@ use Dionchaika\Http\Server\RequestHandler as Handler;
 use Closure;
 use RuntimeException;
 use Dionchaika\Container\Container;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -24,43 +25,43 @@ use Psr\Http\Message\ServerRequestInterface;
 class RequestHandler extends Handler implements RequestHandlerInterface
 {
     /**
-     * The router instance
+     * The container instance
      * used by the request handler.
      *
-     * @var \Dionchaika\Router\Router
+     * @var \Psr\Container\ContainerInterface
      */
-    protected $router;
+    protected $container;
 
     /**
      * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $fallbackHandler
      * @param mixed[]                                                  $middleware
      */
     public function __construct($fallbackHandler, array $middleware = []) {
-        $this->router = new Router;
+        $this->container = new Container;
         parent::__construct($fallbackHandler, $middleware);
     }
 
     /**
-     * Get the router instance
-     * used by the request handler.
+     * Get the container
+     * instance used by the request handler.
      *
-     * @return \Dionchaika\Router\Router
+     * @return \Psr\Container\ContainerInterface
      */
-    public function getRouter(): Router
+    public function getContainer(): ContainerInterface
     {
-        return $this->router;
+        return $this->container;
     }
 
     /**
-     * Set the router instance
-     * used by the request handler.
+     * Set the container
+     * instance used by the request handler.
      *
-     * @param \Dionchaika\Router\Router $router
+     * @param \Psr\Container\ContainerInterface $container
      * @return self
      */
-    public function setRouter(Router $router): self
+    public function setContainer(ContainerInterface $container): self
     {
-        $this->router = $router;
+        $this->container = $container;
         return $this;
     }
 
@@ -74,25 +75,18 @@ class RequestHandler extends Handler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $container = $this->router->getContainer();
-
         if (0 === count($this->middleware)) {
             $fallbackHandler = $this->fallbackHandler;
 
             if ($fallbackHandler instanceof Closure) {
-                if (
-                    $container instanceof Container &&
-                    !$this->router->parametersAsRequestAttributes
-                ) {
-                    $parameters = [$request];
-                }
-
                 return $fallbackHandler($request);
             }
 
             $fallbackHandler = !is_string($fallbackHandler)
                 ? $fallbackHandler
-                : $this->container->make($fallbackHandler);
+                : (($this->container instanceof Container)
+                    ? $this->container->make($fallbackHandler)
+                    : $this->container->get($fallbackHandler));
 
             if ($fallbackHandler instanceof RequestHandlerInterface) {
                 return $fallbackHandler->handle($request);
@@ -113,7 +107,9 @@ class RequestHandler extends Handler implements RequestHandlerInterface
 
         $middleware = !is_string($middleware)
             ? $middleware
-            : $this->container->make($middleware);
+            : (($this->container instanceof Container)
+                ? $this->container->make($middleware)
+                : $this->container->get($middleware));
 
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware->process($request, $this);
@@ -127,7 +123,7 @@ class RequestHandler extends Handler implements RequestHandlerInterface
     }
 
     /**
-     * Invoke the request handler.
+     * Handle a request a return a response.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface
