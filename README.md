@@ -54,6 +54,8 @@ $routes = new RouteCollection([
 ]);
 
 $router = new Router($routes);
+
+$response = $router->matchRequest($request);
 ```
 
 ## Basic usage
