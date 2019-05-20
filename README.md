@@ -63,11 +63,11 @@ $response = $router->matchRequest($request);
 ```php
 <?php
 
-$router->get('{pattern}', '{handler}');
-$router->put('{pattern}', '{handler}');
-$router->head('{pattern}', '{handler}');
-$router->post('{pattern}', '{handler}');
-$router->patch('{pattern}', '{handler}');
-$router->delete('{pattern}', '{handler}');
-$router->options('{pattern}', '{handler}');
+$router->get('/account/login', '\\App\\Controllers\\Account\\Login');
+$router->put('/account/login', '\\App\\Controllers\\Account\\Login');
+$router->head('/account/login', '\\App\\Controllers\\Account\\Login');
+$router->post('/account/login', '\\App\\Controllers\\Account\\Login');
+$router->patch('/account/login', '\\App\\Controllers\\Account\\Login');
+$router->delete('/account/login', '\\App\\Controllers\\Account\\Login');
+$router->options('/account/login', '\\App\\Controllers\\Account\\Login');
 ```
