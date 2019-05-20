@@ -36,7 +36,7 @@ class RequestHandler extends Handler implements RequestHandlerInterface
      * @param mixed[]                                                  $middleware
      */
     public function __construct($fallbackHandler, array $middleware = []) {
-        $this->container = new Container;
+        $this->router = new Router;
         parent::__construct($fallbackHandler, $middleware);
     }
 
@@ -80,6 +80,13 @@ class RequestHandler extends Handler implements RequestHandlerInterface
             $fallbackHandler = $this->fallbackHandler;
 
             if ($fallbackHandler instanceof Closure) {
+                if (
+                    $container instanceof Container &&
+                    !$this->router->parametersAsRequestAttributes
+                ) {
+                    $parameters = [$request];
+                }
+
                 return $fallbackHandler($request);
             }
 

@@ -100,6 +100,8 @@ class Route
         $this->methods = $methods;
         $this->pattern = $pattern;
         $this->handler = new RequestHandler($handler);
+
+        $this->router = new Router;
         $this->parameters = new ParameterCollection;
     }
 

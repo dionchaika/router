@@ -27,14 +27,6 @@ class Router
     const METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
     /**
-     * Store matched URI
-     * parameters as request attributes.
-     *
-     * @var bool
-     */
-    public $parametersAsRequestAttributes = true;
-
-    /**
      * The route collection.
      *
      * @var \Dionchaika\Router\RouteCollection
@@ -85,7 +77,8 @@ class Router
     }
 
     /**
-     * Get the container instance used by the router.
+     * Get the container
+     * instance used by the router.
      *
      * @return \Psr\Container\ContainerInterface
      */
@@ -95,7 +88,8 @@ class Router
     }
 
     /**
-     * Set the container instance used by the router.
+     * Set the container
+     * instance used by the router.
      *
      * @param \Psr\Container\ContainerInterface $container
      * @return self
@@ -120,49 +114,24 @@ class Router
      * Set the request base path.
      *
      * @param string $path
-     * @return void
-     */
-    public function setRequestBasePath(string $path): void
-    {
-        $this->requestBasePath = '/'.trim($path, '/');
-    }
-
-    /**
-     * Add a new route.
-     *
-     * @param string|string[]                                          $methods
-     * @param string                                                   $pattern
-     * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $handler
-     * @return \Dionchaika\Router\Route
-     */
-    public function addRoute($methods, string $pattern, $handler): Route
-    {
-        return $this->routes->add(new Route($methods, $pattern, $handler));
-    }
-
-    /**
-     * Add a new router middleware.
-     *
-     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
      * @return self
      */
-    public function addMiddleware($middleware): self
+    public function setRequestBasePath(string $path): self
     {
-        $this->middleware[] = $middleware;
+        $this->requestBasePath = '/'.trim($path, '/');
         return $this;
     }
 
     /**
      * Add a new router middleware.
      *
-     * An alias method name to addMiddleware.
-     *
      * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
      * @return self
      */
     public function use($middleware): self
     {
-        return $this->addMiddleware($middleware);
+        $this->middleware[] = $middleware;
+        return $this;
     }
 
     /**
@@ -273,6 +242,19 @@ class Router
     }
 
     /**
+     * Add a new route.
+     *
+     * @param string|string[]                                          $methods
+     * @param string                                                   $pattern
+     * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $handler
+     * @return \Dionchaika\Router\Route
+     */
+    public function addRoute($methods, string $pattern, $handler): Route
+    {
+        return $this->routes->add(new Route($methods, $pattern, $handler));
+    }
+
+    /**
      * Add a new route group.
      *
      * @param mixed[]  $attributes
@@ -281,9 +263,7 @@ class Router
      */
     public function group(array $attributes = [], Closure $callback): void
     {
-        $this->routeGroup[] = $attributes;
-        $callback($this);
-        array_shift($this->routeGroup);
+        //
     }
 
     /**
@@ -292,7 +272,7 @@ class Router
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function match(ServerRequestInterface $request): ResponseInterface
+    public function matchRequest(ServerRequestInterface $request): ResponseInterface
     {
         if ('' !== $this->requestBasePath) {
             $request = $request->withUri(
