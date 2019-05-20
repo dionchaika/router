@@ -23,20 +23,27 @@ class ParameterCollection
     protected $parameters = [];
 
     /**
+     * The array of all of the parameters.
+     *
+     * @var \Dionchaika\Router\ParameterInterface[]
+     */
+    protected $allParameters = [];
+
+    /**
      * @param \Dionchaika\Router\ParameterInterface[] $parameters
      * @throws \InvalidArgumentException
      */
     public function __construct(array $parameters = [])
     {
         foreach ($parameters as $parameter) {
-            if ($parameter instanceof ParameterInterface) {
-                $this->add($parameter);
-            } else {
+            if (!($parameter instanceof ParameterInterface)) {
                 throw new InvalidArgumentException(
                     'Parameter must be an instance of '
                     .'\\Dionchaika\\Router\\ParameterInterface!'
                 );
             }
+
+            $this->add($parameter);
         }
     }
 
@@ -48,17 +55,18 @@ class ParameterCollection
      */
     public function add(ParameterInterface $parameter): ParameterInterface
     {
+        $this->allParameters[] = $parameter;
         return $this->parameters[$parameter->getName()] = $parameter;
     }
 
     /**
-     * Get all parameters of the collection.
+     * Get all of the parameters in the collection.
      *
-     * @return mixed[]
+     * @return \Dionchaika\Router\ParameterInterface[]
      */
     public function all(): array
     {
-        return $this->parameters;
+        return $this->allParameters;
     }
 
     /**
