@@ -71,7 +71,7 @@ class Route
      */
     public function __construct($methods, string $pattern, $handler)
     {
-        $methods = array_map('strtoupper', is_array($methods) ? $methods : explode('|', $methods));
+        $methods = is_array($methods) ? $methods : explode('|', $methods);
 
         if (in_array('GET', $methods) && ! in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
