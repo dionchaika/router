@@ -2,6 +2,8 @@
 
 namespace Lazy\Router;
 
+use Psr\Http\Message\ServerRequestInterface;
+
 class Route
 {
     /**
@@ -197,18 +199,39 @@ class Route
     }
 
     /**
+     * Check is the route matches a request.
+     *
+     * @param  \Psr\Http\Message\ServerRequestInterface  $request
+     *
+     * @return bool
+     */
+    public function isMatchesRequest(ServerRequestInterface $request): bool
+    {
+        if (in_array($request->getMethod(), $this->methods)) {
+            $pattern = $this->compilePattern($this->pattern);
+            if (preg_match($pattern, '/'.ltrim($request->getUri()->getPath(), '/'), $matches)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Compile the route pattern.
      *
+     * @param  string  $pattern
+     * 
      * @return string
      */
-    protected function compilePattern(): string
+    protected function compilePattern(string $pattern): string
     {
-        $pattern = preg_replace('/\[([^\]]+)\]/', '(?:$1)?', $this->pattern);
+        $pattern = preg_replace('/\[([^\]]+)\]/', '(?:$1)?', $pattern);
 
         $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
             return isset($matches[2]) ? '('.$matches[2].')' : '([^/]+)';
         }, $pattern);
 
-        return '~^'.$pattern.'$~';
+        return '~^/'.ltrim($pattern, '/').'$~';
     }
 }

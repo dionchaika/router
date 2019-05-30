@@ -2,6 +2,10 @@
 
 namespace Lazy\Router;
 
+use Closure;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 class Router
 {
     /**
@@ -179,5 +183,25 @@ class Router
         }
 
         return $this->allRoutes[implode('|', $route->getMethods()).' '.$pattern] = $route;
+    }
+
+    /**
+     * Handle a request and return a response.
+     *
+     * @param  \Psr\Http\Message\ServerRequestInterface  $request
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $method = $request->getMethod();
+
+        if (array_key_exists($method, $this->routes)) {
+            foreach ($this->routes[$method] as $route) {
+                if ($route->isMatchesRequest($request)) {
+                    return ($route->getHandler())();
+                }
+            }
+        }
     }
 }
