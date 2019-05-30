@@ -225,11 +225,16 @@ class Route
     public function isMatchesRequest(ServerRequestInterface $request): bool
     {
         if (in_array($request->getMethod(), $this->methods)) {
-            $pattern = $this->compilePattern($this->pattern);
-            if (preg_match($pattern, '/'.ltrim($request->getUri()->getPath(), '/'), $matches)) {
+            if (preg_match(
+                $this->compilePattern($this->pattern),
+                '/'.ltrim($request->getUri()->getPath(), '/'), $matches)
+            ) {
                 array_shift($matches);
 
-                $this->matchedParams = array_combine(array_keys($this->matchedParams), array_values($matches));
+                $this->matchedParams = array_combine(
+                    array_keys($this->matchedParams),
+                    array_values($matches)
+                );
 
                 return true;
             }
@@ -247,7 +252,7 @@ class Route
      */
     protected function compilePattern(string $pattern): string
     {
-        $pattern = preg_replace('/\[([^\]]+)\]/', '(?:$1)?', $pattern);
+        $pattern = preg_replace('/(?>!\:)\[([^\]]+)\]/', '(?:$1)?', $pattern);
 
         $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
             $this->matchedParams[$matches[1]] = null;
