@@ -27,7 +27,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "Dionchaika\\Router\\": "src/"
+            "Lazy\\Router\\": "src/"
         }
     },
     "prefer-stable": true,
