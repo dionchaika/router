@@ -64,7 +64,7 @@ class Route
     {
         $methods = array_map('strtoupper', is_array($methods) ? $methods : explode('|', $methods));
 
-        if (in_array('GET', $methods) && !in_array('HEAD', $methods)) {
+        if (in_array('GET', $methods) && ! in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
         }
 
