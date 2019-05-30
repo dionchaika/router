@@ -225,16 +225,13 @@ class Route
     public function isMatchesRequest(ServerRequestInterface $request): bool
     {
         if (in_array($request->getMethod(), $this->methods)) {
-            if (preg_match(
-                $this->compilePattern($this->pattern),
-                '/'.ltrim($request->getUri()->getPath(), '/'), $matches)
-            ) {
+            $pattern = $this->compilePattern($this->pattern);
+            $path = '/'.ltrim($request->getUri()->getPath(), '/');
+
+            if (preg_match($pattern, $path, $matches)) {
                 array_shift($matches);
 
-                $this->matchedParams = array_combine(
-                    array_keys($this->matchedParams),
-                    array_values($matches)
-                );
+                $this->matchedParams = array_combine(array_keys($this->matchedParams), array_values($matches));
 
                 return true;
             }
