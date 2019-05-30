@@ -1,6 +1,6 @@
 <?php
 
-namespace Lazy\Route;
+namespace Lazy\Router;
 
 class Route
 {
@@ -172,14 +172,14 @@ class Route
     /**
      * Set the route parameter pattern.
      *
-     * @param  string  $parameter
+     * @param  string  $param
      * @param  string  $pattern
      *
      * @return self
      */
-    public function pattern(string $parameter, string $pattern): self
+    public function pattern(string $param, string $pattern): self
     {
-        $this->patterns[$parameter] = $pattern;
+        $this->patterns[$param] = $pattern;
         return $this;
     }
 
