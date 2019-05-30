@@ -43,7 +43,7 @@ class Router
     /**
      * The route group stack.
      *
-     * @var mixed[]
+     * @var \Lazy\Router\RouteGroup[]
      */
     protected $routeGroupStack = [];
 
