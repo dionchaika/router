@@ -1,34 +1,11 @@
 <?php
 
-/**
- * The PSR RESTful Router.
- *
- * @package dionchaika/router
- * @version 1.0.0
- * @license MIT
- * @author Dion Chaika <dionchaika@gmail.com>
- */
-
-namespace Dionchaika\Router;
-
-use Dionchaika\Http\Uri;
-use InvalidArgumentException;
-use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+namespace Lazy\Route;
 
 class Route
 {
     /**
-     * The route name.
-     *
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * The array
-     * of route methods.
+     * The array of route methods.
      *
      * @var string[]
      */
@@ -42,80 +19,68 @@ class Route
     protected $pattern;
 
     /**
-     * The route request handler.
+     * The route handler.
      *
-     * @var \Dionchaika\Router\RequestHandler
+     * @var mixed
      */
     protected $handler;
 
     /**
-     * The route parameter collection.
+     * The route name.
      *
-     * @var \Dionchaika\Router\ParameterCollection
+     * @var string
      */
-    protected $parameters;
+    protected $name;
 
     /**
-     * The array of headers
-     * that should be in the request.
+     * The route namespace.
+     *
+     * @var string
+     */
+    protected $namespace;
+
+    /**
+     * The array of route parameter patterns.
      *
      * @var mixed[]
      */
-    protected $withHeaders = [];
+    protected $patterns = [];
 
     /**
-     * The array of headers
-     * that should not be in the request.
+     * The array of route middleware.
      *
-     * @var string[]
+     * @var mixed[]
      */
-    protected $withoutHeaders = [];
+    protected $middleware = [];
 
     /**
-     * @param string|string[]                                          $methods
-     * @param string                                                   $pattern
-     * @param \Psr\Http\Server\RequestHandlerInterface|\Closure|string $handler
+     * The route constructor.
+     *
+     * @param  mixed  $methods
+     * @param  string  $pattern
+     * @param  mixed  $handler
      */
     public function __construct($methods, string $pattern, $handler)
     {
-        $methods = is_array($methods)
-            ? $methods
-            : explode('|', $methods);
+        $methods = array_map('strtoupper', is_array($methods) ? $methods : explode('|', $methods));
 
-        if (
-            in_array('GET', $methods) &&
-            !in_array('HEAD', $methods)
-        ) {
+        if (in_array('GET', $methods) && !in_array('HEAD', $methods)) {
             $methods[] = 'HEAD';
         }
 
-        $this->name       = '';
-        $this->methods    = $methods;
-        $this->pattern    = $pattern;
-        $this->parameters = new ParameterCollection;
-        $this->handler    = new RequestHandler($handler);
+        $this->methods = $methods;
+        $this->pattern = $pattern;
+        $this->handler = $handler;
     }
 
     /**
-     * Get the route name.
+     * Get the array of route methods.
      *
-     * @return string
+     * @return string[]
      */
-    public function getName(): string
+    public function getMethods(): array
     {
-        return $this->name;
-    }
-
-    /**
-     * Set the route name.
-     *
-     * @param string $name
-     * @return self
-     */
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-        return $this;
+        return $this->methods;
     }
 
     /**
@@ -129,162 +94,105 @@ class Route
     }
 
     /**
-     * Get the array
-     * of route methods.
+     * Get the route handler.
      *
-     * @return string[]
+     * @return mixed
      */
-    public function getMethods(): array
-    {
-        return $this->methods;
-    }
-
-    /**
-     * Get the route request handler.
-     *
-     * @return \Dionchaika\Router\RequestHandler
-     */
-    public function getHandler(): RequestHandler
+    public function getHandler(): mixed
     {
         return $this->handler;
     }
 
     /**
-     * Add a new middleware to the route.
+     * Get the route name.
      *
-     * @param \Psr\Http\Server\MiddlewareInterface|\Closure|string $middleware
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Get the route namespace.
+     *
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * Get the array of route parameter patterns.
+     *
+     * @return mixed[]
+     */
+    public function getPatterns(): array
+    {
+        return $this->patterns;
+    }
+
+    /**
+     * Get array of route middleware.
+     *
+     * @return mixed[]
+     */
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
+    }
+
+    /**
+     * Add the route middleware.
+     *
+     * @param  mixed  $middleware
+     *
      * @return self
      */
     public function use($middleware): self
     {
-        $this->handler->add($middleware);
+        $this->middleware[] = $middleware;
         return $this;
     }
 
     /**
-     * Get the route parameter collection.
+     * Set the route name.
      *
-     * @return \Dionchaika\Router\ParameterCollection
-     */
-    public function getParameters(): ParameterCollection
-    {
-        return $this->parameters;
-    }
-
-    /**
-     * Add a header
-     * whitch should be in the request.
+     * @param  string  $name
      *
-     * @param string $name
-     * @param string $pattern
      * @return self
      */
-    public function withHeader(string $name, string $pattern = '.*'): self
+    public function name(string $name): self
     {
-        $this->withHeaders[$name] = $pattern;
+        $this->name = $name;
         return $this;
     }
 
     /**
-     * Add a header
-     * whitch should not be in the request.
+     * Set the route parameter pattern.
      *
-     * @param string $header
+     * @param  string  $parameter
+     * @param  string  $pattern
+     *
      * @return self
      */
-    public function withoutHeader(string $header): self
+    public function pattern(string $parameter, string $pattern): self
     {
-        $this->withoutHeaders[] = $header;
+        $this->patterns[$parameter] = $pattern;
         return $this;
     }
 
     /**
-     * Check is the route matches request.
+     * Set the route namespace.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return bool
-     */
-    public function isMatchesRequest(ServerRequestInterface $request): bool
-    {
-        $pattern = $this->pattern;
-
-        preg_match_all('/\[([^\[\]]*)\:([^\[\]]+)\]/', $pattern, $matches);
-        foreach ($matches[0] as $key => $value) {
-            $parameterName = ('' !== $matches[1][$key])
-                ? $matches[1][$key]
-                : $matches[2][$key];
-
-            $parameterPattern = ('' !== $matches[1][$key])
-                ? '('.$matches[2][$key].')'
-                : '([^\/]+)';
-
-            $this->parameters->add(new Parameter($parameterName, null));
-            $pattern = str_replace($value, $parameterPattern, $pattern);
-        }
-
-        if (
-            in_array($request->getMethod(), $this->methods) &&
-            preg_match('~^'.$pattern.'$~', $request->getUri()->getPath(), $matches)
-        ) {
-            foreach ($this->withHeaders as $name => $value) {
-                if (
-                    !$request->hasHeader($name) ||
-                    !preg_match('/^'.preg_quote($value).'$/', $request->getHeaderLine($name))
-                ) {
-                    return false;
-                }
-            }
-
-            foreach ($this->withoutHeaders as $header) {
-                if ($request->hasHeader($header)) {
-                    return false;
-                }
-            }
-
-            array_shift($matches);
-            foreach ($this->parameters->all() as $parameter) {
-                $parameter->setValue(array_shift($matches));
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Get the URI for the route.
+     * @param  string  $namespace
      *
-     * @param mixed[] $parameters
-     * @return \Psr\Http\Message\UriInterface
-     * @throws \InvalidArgumentException
+     * @return self
      */
-    public function getUri(array $parameters = []): UriInterface
+    public function namespace(string $namespace): self
     {
-        $uri = $this->pattern;
-
-        preg_match_all('/\[([^\[\]]*)\:([^\[\]]+)\]/', $uri, $matches);
-        foreach ($matches[0] as $key => $value) {
-            $parameterName = ('' !== $matches[1][$key])
-                ? $matches[1][$key]
-                : $matches[2][$key];
-
-            $parameterPattern = ('' !== $matches[1][$key])
-                ? '('.$matches[2][$key].')'
-                : '([^\/]+)';
-
-            if (
-                isset($parameters[$parameterName]) &&
-                preg_match('/^'.$parameterPattern.'$/', $parameters[$parameterName])
-            ) {
-                $uri = str_replace($value, $parameters[$parameterName], $uri);
-            } else {
-                throw new InvalidArgumentException(
-                    'Parameter is not passed: '.$parameterName.'!'
-                );
-            }
-        }
-
-        return new Uri($uri);
+        $this->namespace = '\\'.ltrim(str_replace('/', '\\', $namespace), '\\');
+        return $this;
     }
 }
