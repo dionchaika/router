@@ -231,7 +231,7 @@ class Route
             if (preg_match($pattern, $path, $matches)) {
                 array_shift($matches);
 
-                $this->matchedParams = array_combine(array_keys($this->matchedParams), array_values($matches));
+                $this->matchedParams = $matches;
 
                 return true;
             }
@@ -249,10 +249,9 @@ class Route
      */
     protected function compilePattern(string $pattern): string
     {
-        $pattern = preg_replace('/(?<!\:)\[(.+)\]/', '(?:$1)?', $pattern);
+        $pattern = preg_replace('/(?<!\:)\[([^\]]+)\]/', '(?:$1)?', $pattern);
 
         $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
-            $this->matchedParams[$matches[1]] = null;
             return isset($matches[2]) ? '('.$matches[2].')' : '([^/]+)';
         }, $pattern);
 
