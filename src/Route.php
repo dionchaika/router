@@ -195,4 +195,20 @@ class Route
         $this->namespace = '\\'.ltrim(str_replace('/', '\\', $namespace), '\\');
         return $this;
     }
+
+    /**
+     * Compile the route pattern.
+     *
+     * @return string
+     */
+    protected function compilePattern(): string
+    {
+        $pattern = preg_replace('/\[([^\]]+)\]/', '(?:$1)?', $this->pattern);
+
+        $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
+            return isset($matches[2]) ? '('.$matches[2].')' : '([^/]+)';
+        }, $pattern);
+
+        return '~^'.$pattern.'$~';
+    }
 }
