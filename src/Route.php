@@ -249,7 +249,7 @@ class Route
      */
     protected function compilePattern(string $pattern): string
     {
-        $pattern = preg_replace('/(?>!\:)\[([^\]]+)\]/', '(?:$1)?', $pattern);
+        $pattern = preg_replace('/(?<!\:)\[(.+)\]/', '(?:$1)?', $pattern);
 
         $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
             $this->matchedParams[$matches[1]] = null;
