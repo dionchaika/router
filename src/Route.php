@@ -98,7 +98,7 @@ class Route
      *
      * @return mixed
      */
-    public function getHandler(): mixed
+    public function getHandler()
     {
         return $this->handler;
     }
