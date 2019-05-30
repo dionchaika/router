@@ -44,7 +44,7 @@ class Router
     protected $namedRoutes = [];
 
     /**
-     * The route group attributes stack.
+     * The route group attribute stack.
      *
      * @var mixed[]
      */
