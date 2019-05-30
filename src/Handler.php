@@ -41,6 +41,7 @@ class Handler implements RequestHandlerInterface
     {
         $this->container = $container;
         $this->fallbackHandler = $fallbackHandler;
+        $this->middleware = $middleware;
     }
 
     /**
