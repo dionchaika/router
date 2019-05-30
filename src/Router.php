@@ -2,7 +2,6 @@
 
 namespace Lazy\Router;
 
-use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -45,9 +44,9 @@ class Router
     protected $namedRoutes = [];
 
     /**
-     * The route group stack.
+     * The route group attributes stack.
      *
-     * @var \Lazy\Router\RouteGroup[]
+     * @var mixed[]
      */
     protected $routeGroupStack = [];
 

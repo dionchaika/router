@@ -211,7 +211,7 @@ class Route
      */
     public function namespace(string $namespace): self
     {
-        $this->namespace = '\\'.ltrim(str_replace('/', '\\', $namespace), '\\');
+        $this->namespace = $namespace;
         return $this;
     }
 
@@ -252,7 +252,11 @@ class Route
         $pattern = preg_replace('/(?<!\:)\[([^\]]+)\]/', '(?:$1)?', $pattern);
 
         $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
-            return isset($matches[2]) ? '('.$matches[2].')' : '([^/]+)';
+            if (isset($matches[2])) {
+                return '('.$matches[2].')';
+            }
+
+            return isset($this->patterns[$matches[1]]) ? '('.$this->patterns[$matches[1]].')' : '([^/]+)';
         }, $pattern);
 
         return '~^/'.ltrim($pattern, '/').'$~';
