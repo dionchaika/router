@@ -18,13 +18,6 @@ class Handler implements RequestHandlerInterface
     protected $container;
 
     /**
-     * The fallback request handler.
-     *
-     * @var mixed
-     */
-    protected $fallbackHandler;
-
-    /**
      * The array of request handler middleware.
      *
      * @var mixed[]
@@ -32,17 +25,52 @@ class Handler implements RequestHandlerInterface
     protected $middleware = [];
 
     /**
+     * The fallback request handler.
+     *
+     * @var mixed
+     */
+    protected $fallbackHandler;
+
+    /**
      * The request handler constructor.
      *
      * @param  \Psr\Container\ContainerInterface  $container
      * @param  mixed  $fallbackHandler
-     * @param  mixed  $middleware
      */
-    public function __construct(ContainerInterface $container, $fallbackHandler, $middleware)
+    public function __construct(ContainerInterface $container, $fallbackHandler)
     {
         $this->container = $container;
         $this->fallbackHandler = $fallbackHandler;
-        $this->middleware = $middleware;
+    }
+
+    /**
+     * Get the request handler container.
+     *
+     * @return \Psr\Container\ContainerInterface
+     */
+    public function getContainer(): ContainerInterface
+    {
+        return $this->container;
+    }
+
+    /**
+     * Get the array of request handler middleware.
+     *
+     * @return mixed[]
+     */
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
+    }
+
+    /**
+     * Get the fallback request handler.
+     *
+     * @return mixed
+     */
+    public function getFallbackHandler()
+    {
+        return $this->fallbackHandler;
     }
 
     /**
@@ -68,24 +96,15 @@ class Handler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         if (empty($this->middleware)) {
-            if ($this->fallbackHandler instanceof Closure) {
-                return $this->fallbackHandler($request);
-            }
 
-            if (method_exists($this->fallbackHandler, 'handle')) {
-                return $this->fallbackHandler->handle($request);
-            }
+            //
+
         }
 
         $middleware = array_shift($this->middleware);
 
-        if ($middleware instanceof Closure) {
-            return $middleware($request, $this);
-        }
+        //
 
-        if (method_exists($middleware, 'process')) {
-            return $middleware->process($request, $this);
-        }
     }
 
     /**
