@@ -203,5 +203,7 @@ class Router
                 }
             }
         }
+
+        throw new NotFoundException;
     }
 }
