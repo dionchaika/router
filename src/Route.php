@@ -106,9 +106,9 @@ class Route
     /**
      * Get the route name.
      *
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -116,9 +116,9 @@ class Route
     /**
      * Get the route namespace.
      *
-     * @return string
+     * @return string|null
      */
-    public function getNamespace(): string
+    public function getNamespace(): ?string
     {
         return $this->namespace;
     }
@@ -134,7 +134,7 @@ class Route
     }
 
     /**
-     * Get array of route middleware.
+     * Get the array of route middleware.
      *
      * @return mixed[]
      */
