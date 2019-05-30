@@ -199,7 +199,7 @@ class Router
         if (array_key_exists($method, $this->routes)) {
             foreach ($this->routes[$method] as $route) {
                 if ($route->isMatchesRequest($request)) {
-                    return ($route->getHandler())();
+                    return ($route->getHandler())(...$route->getMatchedParams());
                 }
             }
         }

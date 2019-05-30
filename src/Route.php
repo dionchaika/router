@@ -56,6 +56,13 @@ class Route
     protected $middleware = [];
 
     /**
+     * The array of route matched parameters.
+     *
+     * @var mixed[]
+     */
+    protected $matchedParams = [];
+
+    /**
      * The route constructor.
      *
      * @param  mixed  $methods
@@ -146,6 +153,16 @@ class Route
     }
 
     /**
+     * Get the array of route matched parameters.
+     *
+     * @return mixed[]
+     */
+    public function getMatchedParams(): array
+    {
+        return $this->matchedParams;
+    }
+
+    /**
      * Add the route middleware.
      *
      * @param  mixed  $middleware
@@ -210,6 +227,10 @@ class Route
         if (in_array($request->getMethod(), $this->methods)) {
             $pattern = $this->compilePattern($this->pattern);
             if (preg_match($pattern, '/'.ltrim($request->getUri()->getPath(), '/'), $matches)) {
+                array_shift($matches);
+
+                $this->matchedParams = array_combine(array_keys($this->matchedParams), array_values($matches));
+
                 return true;
             }
         }
@@ -229,6 +250,7 @@ class Route
         $pattern = preg_replace('/\[([^\]]+)\]/', '(?:$1)?', $pattern);
 
         $pattern = preg_replace_callback('/\{(\w+)(?:\:([^}]+))?\}/', function ($matches) {
+            $this->matchedParams[$matches[1]] = null;
             return isset($matches[2]) ? '('.$matches[2].')' : '([^/]+)';
         }, $pattern);
 
