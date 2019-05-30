@@ -35,8 +35,9 @@ class Handler implements RequestHandlerInterface
      *
      * @param  \Psr\Container\ContainerInterface  $container
      * @param  mixed  $fallbackHandler
+     * @param  mixed[]  $middleware
      */
-    public function __construct(ContainerInterface $container, $fallbackHandler)
+    public function __construct(ContainerInterface $container, $fallbackHandler, $middleware = [])
     {
         $this->container = $container;
         $this->fallbackHandler = $fallbackHandler;
