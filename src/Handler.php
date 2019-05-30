@@ -2,7 +2,6 @@
 
 namespace Lazy\Router;
 
-use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
